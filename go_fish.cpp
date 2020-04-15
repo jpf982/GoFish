@@ -3,14 +3,14 @@
 #include <iostream>    // Provides cout and cin
 #include <cstdlib>     // Provides EXIT_SUCCESS
 #include "card.h"
-//#include "player.h"
+#include "player.h"
 #include "deck.h"
 
 using namespace std;
 
 
 // PROTOTYPES for functions used by this demonstration program:
-//void dealHand(Deck &d, Player &p, int numCards);
+void dealHand(Deck &d, Player &p, int numCards);
 
 
 
@@ -83,33 +83,38 @@ int main( ) {
         cout << "Card is " << dealt.toString() << endl;
     }
 
+    cout << endl;
+
     cout << "dealing a 53rd card... expecting fail..." << endl;
-    c.dealCard();
+    dealt = c.dealCard();
+    if(dealt.getRank() == 0){
+        cout << "dealCard() failed as expected" << endl;
+    }
+    else{
+        cout << "Error: dealCard() did not fail" << endl;
+    }
 
-    cout << "53rd card drawing should have failed. If you see this, it didn't" << endl;
-
-    /*
     int numCards = 5;
 
     Player p1("Joe");
     Player p2("Jane");
 
+    cout << "creating new deck for players Joe and Jane..." << endl;
     Deck d;  //create a deck of cards
     d.shuffle();
+    cout << "deck created and shuffled" << endl;
 
     dealHand(d, p1, numCards);
     dealHand(d, p2, numCards);
 
     cout << p1.getName() <<" has : " << p1.showHand() << endl;
     cout << p2.getName() <<" has : " << p2.showHand() << endl;
-*/
+
     return EXIT_SUCCESS;
 }
 
-
-/*
 void dealHand(Deck &d, Player &p, int numCards)
 {
     for (int i=0; i < numCards; i++)
         p.addCard(d.dealCard());
-}*/
+}
