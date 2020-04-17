@@ -17,7 +17,6 @@ void Player::addCard(Card c){
 }
 
 void Player::bookCards(Card c1, Card c2){
-    cout << myName << " books the " << c1.rankString(c1.getRank()) << "s" << endl;
     myBook.push_back(c1);
     myBook.push_back(c2);
 }
