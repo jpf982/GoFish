@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include <string>
 #include "card.h"
 
@@ -57,8 +58,10 @@ string Card::rankString(int r) const{
         return "K";
     }
     else{
-        string s = to_string(r);
-        return s;
+        stringstream s;
+	s << r;
+	string out = s.str();
+        return out;
     }
 }
 
