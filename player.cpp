@@ -21,6 +21,11 @@ void Player::bookCards(Card c1, Card c2){
     myBook.push_back(c2);
 }
 
+Card Player::chooseCardFromHand() const{
+    auto choice = myHand.begin();
+    return *choice;
+}
+
 bool Player::cardInHand(Card c) const{
     for(int i = 0; i < myHand.size(); i++){
         if(myHand[i].getRank() == c.getRank() && myHand[i].sameSuitAs(c)){
