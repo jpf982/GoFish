@@ -22,8 +22,8 @@ void Player::bookCards(Card c1, Card c2){
 }
 
 Card Player::chooseCardFromHand() const{
-    auto chosen = myHand.begin();
-    return *chosen;
+    Card chosen = myHand.front();
+    return chosen;
 }
 
 bool Player::cardInHand(Card c) const{
@@ -43,7 +43,7 @@ Card Player::removeCardFromHand(Card c) {
             return removedCard;
         }
     }
-    return Card(0,Card::Suit::spades);
+    return Card(0,Card::spades);
 }
 
 string Player::showHand() const{
