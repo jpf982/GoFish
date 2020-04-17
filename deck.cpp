@@ -10,16 +10,16 @@ using namespace std;
 Deck::Deck() {
     myIndex = 0;
     for(int i = 0; i < 13; i++){
-        myCards[i] = Card(i+1, Card::Suit::spades);
+        myCards[i] = Card(i+1, Card::spades);
     }
     for(int i = 0; i < 13; i++){
-        myCards[i+13] = Card(i+1, Card::Suit::hearts);
+        myCards[i+13] = Card(i+1, Card::hearts);
     }
     for(int i = 0; i < 13; i++){
-        myCards[i+26] = Card(i+1, Card::Suit::diamonds);
+        myCards[i+26] = Card(i+1, Card::diamonds);
     }
     for(int i = 0; i < 13; i++){
-        myCards[i+39] = Card(i+1, Card::Suit::clubs);
+        myCards[i+39] = Card(i+1, Card::clubs);
     }
     srand(time(0));
 }
@@ -40,10 +40,11 @@ Card Deck::dealCard(){
         return dealt;
     }
     else{
-        exit(1);
+        return Card(0, Card::spades);
     }
 }
 
 int Deck::size() const{
     return (52-myIndex);
 }
+
