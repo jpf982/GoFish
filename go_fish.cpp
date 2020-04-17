@@ -1,6 +1,5 @@
-// FILE: card_demo.cpp
-// This is a small demonstration program showing how the Card and Deck classes are used.
 #include <iostream>    // Provides cout and cin
+#include <fstream>
 #include <cstdlib>     // Provides EXIT_SUCCESS
 #include "card.h"
 #include "player.h"
@@ -8,107 +7,109 @@
 
 using namespace std;
 
-
-// PROTOTYPES for functions used by this demonstration program:
+// PROTOTYPES made by Roger Priebe for functions used by this program:
 void dealHand(Deck &d, Player &p, int numCards);
 
-
-
-
 int main( ) {
-    Card ace;                                      //default ace of spades
-    Card jack(11, Card::Suit::spades);   //jack of spades
-    Card queen(12, Card::Suit::hearts); //queen of hearts
-    Card king(13, Card::Suit::clubs);   //king of clubs
-    Card two(2, Card::Suit::diamonds);  //two of diamonds
-
-    cout << "checking if ace of spades is same suit as jack of spades..." << endl;
-    if (ace.sameSuitAs(jack)) {
-        cout << "same suit" << endl;
-    } else {
-        cout << "not same suit" << endl;
-    }
-
-    cout << "checking if king of clubs is same suit as queen of hearts..." << endl;
-    if (king.sameSuitAs(queen)) {
-        cout << "same suit" << endl;
-    } else {
-        cout << "not same suit" << endl;
-    }
-    cout << endl;
-
-    cout << "Queen rank = " << queen.getRank() << endl;
-    cout << "king rank = " << king.getRank() << endl;
-    cout << "jack rank = " << jack.getRank() << endl;
-    cout << "ace rank = " << ace.getRank() << endl << endl;
-
-    cout << "string version of ace of spades = " << ace.toString() << endl;
-    cout << "string version of two of diamonds = " << two.toString() << endl;
-    cout << "string version of jack of spades = " << jack.toString() << endl;
-    cout << "string version of queen of hearts = " << queen.toString() << endl;
-    cout << "string version of king of clubs = " << king.toString() << endl << endl;
-
-    cout << "creating deck..." << endl;
-    Deck a;
-    cout << "deck created" << endl;
-    cout << "Deck size = " << a.size() << endl;
+    ofstream file;
+    file.open("gofish_results.txt");
 
     Card dealt;
-    for (int i = 0; i < 52; i++) {
-        dealt = a.dealCard();
-        cout << "Card is " << dealt.toString() << endl;
-    }
+    int numCards = 7;
 
-    cout << endl;
+    Player p1("Adam");
+    Player p2("Eve");
 
-    cout << "creating deck..." << endl;
-    Deck b;
-    cout << "deck created" << endl;
-    b.shuffle();
-    cout << "shuffling deck..." << endl;
-    for(int i = 0; i < 52; i++){
-        dealt = b.dealCard();
-        cout << "Card is " << dealt.toString() << endl;
-    }
 
-    cout << endl;
-
-    cout << "creating deck..." << endl;
-    Deck c;
-    cout << "deck created" << endl;
-    c.shuffle();
-    cout << "shuffling deck..." << endl;
-    for(int i = 0; i < 52; i++){
-        dealt = c.dealCard();
-        cout << "Card is " << dealt.toString() << endl;
-    }
-
-    cout << endl;
-
-    cout << "dealing a 53rd card... expecting fail..." << endl;
-    dealt = c.dealCard();
-    if(dealt.getRank() == 0){
-        cout << "dealCard() failed as expected" << endl;
-    }
-    else{
-        cout << "Error: dealCard() did not fail" << endl;
-    }
-
-    int numCards = 5;
-
-    Player p1("Joe");
-    Player p2("Jane");
-
-    cout << "creating new deck for players Joe and Jane..." << endl;
+    file << "creating new deck for players " << p1.getName() << " & " << p2.getName() << "..." << endl;
     Deck d;  //create a deck of cards
     d.shuffle();
-    cout << "deck created and shuffled" << endl;
+    file << "deck created and shuffled" << endl;
 
     dealHand(d, p1, numCards);
     dealHand(d, p2, numCards);
 
-    cout << p1.getName() <<" has : " << p1.showHand() << endl;
-    cout << p2.getName() <<" has : " << p2.showHand() << endl;
+    file << p1.getName() <<" has : " << p1.showHand() << endl;
+    file << p2.getName() <<" has : " << p2.showHand() << endl;
+
+    file << "Both players look for initial pairs in their hands..." << endl;
+    for(int i = 0; i < p1.getHandSize(); i++){
+        p1.checkHandForPair();
+    }
+    for(int i = 0; i < p2.getHandSize(); i++){
+        p2.checkHandForPair();
+    }
+
+    Card taken;
+    while(p1.getBookSize() < 14 && p2.getBookSize() < 14 && d.size() > 0){
+        if(p1.getHandSize() != 0){
+            Card choice = p1.chooseCardFromHand();
+            file << p1.getName() << " asks - Do you have a " << choice.rankString(choice.getRank()) << "?" << endl;
+            if(p2.sameRankInHand(choice)){
+                file << p2.getName() << " says - Yes. I have a " << choice.rankString(choice.getRank()) << "." << endl;
+                taken = p2.removeCardFromHand(choice);
+                p1.addCard(taken);
+                p1.checkHandForPair();
+                file << p1.getName() << " books the " << taken.rankString(taken.getRank()) << endl;
+            }
+            else{
+                file << p2.getName() << " says - Go Fish" << endl;
+                dealt = d.dealCard();
+                file << p1.getName() << " draws " << dealt.toString() << endl;
+                p1.addCard(dealt);
+                p1.checkHandForPair();
+                file << p1.getName() << " books the " << dealt.rankString(dealt.getRank()) << endl;
+            }
+        }
+        else{
+            file << p1.getName() << " draws a card due to an empty hand." << endl;
+            p1.addCard(d.dealCard());
+        }
+
+        if(p2.getHandSize() != 0){
+            Card choice = p2.chooseCardFromHand();
+            file << p2.getName() << " asks - Do you have a " << choice.rankString(choice.getRank()) << "?" << endl;
+            if(p1.sameRankInHand(choice)){
+                file << p1.getName() << " says - Yes. I have a " << choice.rankString(choice.getRank()) << "." << endl;
+                taken = p1.removeCardFromHand(choice);
+                p2.addCard(taken);
+                p2.checkHandForPair();
+                file << p2.getName() << " books the " << taken.rankString(taken.getRank()) << endl;
+            }
+            else if(d.size() > 0){
+                file << p1.getName() << " says - Go Fish" << endl;
+                dealt = d.dealCard();
+                file << p2.getName() << " draws " << dealt.toString() << endl;
+                p2.addCard(dealt);
+                p2.checkHandForPair();
+                file << p2.getName() << " books the " << dealt.rankString(dealt.getRank()) << endl;
+            }
+        }
+        else if(d.size() > 0){
+            file << p2.getName() << " draws a card due to an empty hand." << endl;
+            p2.addCard(d.dealCard());
+        }
+
+    }
+
+    if(d.size() == 0){
+        file << "No more cards in the deck." << endl;
+    }
+
+    if(p1.getBookSize() > p2.getBookSize()){
+        file << p1.getName() << " wins!" << endl;
+    }
+    else if(p1.getBookSize() < p2.getBookSize()){
+        file << p2.getName() << " wins!" << endl;
+    }
+    else if(p1.getBookSize() == p2.getBookSize()){
+        file << "Tie game." << endl;
+    }
+
+    file << p1.getName() << "'s Books: " << p1.showBooks() << endl;
+    file << p2.getName() << "'s Books: " << p2.showBooks() << endl;
+
+    file << "Game over" << endl;
 
     return EXIT_SUCCESS;
 }
