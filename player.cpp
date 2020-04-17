@@ -17,13 +17,14 @@ void Player::addCard(Card c){
 }
 
 void Player::bookCards(Card c1, Card c2){
+    cout << myName << " books the " << c1.rankString(c1.getRank()) << "s" << endl;
     myBook.push_back(c1);
     myBook.push_back(c2);
 }
 
 Card Player::chooseCardFromHand() const{
-    auto choice = myHand.begin();
-    return *choice;
+    auto chosen = myHand.begin();
+    return *chosen;
 }
 
 bool Player::cardInHand(Card c) const{
@@ -36,10 +37,10 @@ bool Player::cardInHand(Card c) const{
 }
 
 Card Player::removeCardFromHand(Card c) {
-    for(auto i = myHand.begin(); i != myHand.end(); i++){
-        if(*i == c){
-            Card removedCard = *i;
-            myHand.erase(i);
+    for(int i = 0; i != myHand.size(); i++){
+        if(myHand[i].getRank() == c.getRank()){
+            Card removedCard = myHand[i];
+            myHand.erase(myHand.begin()+i);
             return removedCard;
         }
     }
@@ -68,17 +69,17 @@ int Player::getHandSize() const{
 }
 
 int Player::getBookSize() const{
-    return myBook.size();
+    return myBook.size()/2;
 }
 
 bool Player::checkHandForPair(){
-    for(auto i = myHand.begin(); i != myHand.end(); i++){
-        for(auto j = i++; j != myHand.end(); j++){
-            if(*i == *j){
-                Card c1 = *i;
-                removeCardFromHand(*i);
-                Card c2 = *j;
-                removeCardFromHand(*j);
+    for(int i = 0; i < myHand.size(); ++i){
+        for(int j = i+1; j < myHand.size(); ++j){
+            if(myHand[i].getRank() == myHand[j].getRank()){
+                Card c1 = myHand[i];
+                Card c2 = myHand[j];
+                removeCardFromHand(c1);
+                removeCardFromHand(c2);
                 bookCards(c1,c2);
                 return true;
             }
